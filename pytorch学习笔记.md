@@ -48,7 +48,7 @@
 
 ### 推理
 
-在测试模型确定模型性能不错的情况下，如果获得了一组样本只有属性没有标签，就可以通过这个模型进行推理获得模型的标签。所谓推理的过程就是`"计算"标签`的过程
+在测试模型确定模型性能不错的情况下，如果获得了一组样本只有属性没有标签，就可以通过这个模型进行推理获得模型的标签。所谓推理的过程就是"计算"`标签`的过程
 
 ## Tensor(张量)的基本概念
 
@@ -73,6 +73,49 @@
 
 其中$Y$表示样本标签，$X$表示样本属性(可简称'样本')，$W、b$在模型还没有被求解出来时为变量——以上所有参数在机器学习问题中都会被转化为tensor(用tensor描述)
 
-## Tensor的常用操作
+## Tensor的常用操作(使用Tensor时的基本概念)
 
-### 类型
+- Tensor的类型
+- 如何创建Tensor
+- Tensor包含哪些属性
+- 如何使用Tensor进行算术运算
+- Tensor的其他的操作(如：切片、索引、变形)
+- Tensor与numpy互相转换
+
+### Tensor的类型
+
+| Data Type                     | PyTorch Alias                          | Tensor Type                  |
+|-------------------------------|----------------------------------------|------------------------------|
+| 32-bit floating point         | `torch.float32` or `torch.float`      | `torch.*.FloatTensor`        |
+| 64-bit floating point         | `torch.float64` or `torch.double`     | `torch.*.DoubleTensor`       |
+| 16-bit floating point         | `torch.float16` or `torch.half`       | `torch.*.HalfTensor`         |
+| 8-bit integer (unsigned)      | `torch.uint8`                         | `torch.*.ByteTensor`         |
+| 8-bit integer (signed)        | `torch.int8`                          | `torch.*.CharTensor`         |
+| 16-bit integer (signed)       | `torch.int16` or `torch.short`        | `torch.*.ShortTensor`        |
+| 32-bit integer (signed)       | `torch.int32` or `torch.int`          | `torch.*.IntTensor`          |
+| 64-bit integer (signed)       | `torch.int64` or `torch.long`         | `torch.*.LongTensor`         |
+| Boolean                       | `torch.bool`                          | `torch.*.BoolTensor`         |
+
+### Tensor的创建
+
+#### 常用的函数及其功能
+
+| 函数                     | 功能                           |
+|--------------------------|--------------------------------|
+| `Tensor(*size)`          | 基础构造函数                   |
+| `Tensor(data)`           | 类似 `np.array`                |
+| `ones(*size)`            | 全 1 张量 (`Full1Tensor`)      |
+| `zeros(*size)`           | 全 0 张量 (`Full0Tensor`)      |
+| `eye(*size)`             | 对角线为 1，其他为 0           |
+| `arange(s, e, step)`     | 从 `s` 到 `e`，步长为 `step`   |
+| `linspace(s, e, steps)`  | 从 `s` 到 `e`，均匀切分成 `steps` 份 |
+| `rand/randn(*size)`      | 均匀/标准分布                  |
+| `normal(mean, std)/uniform_(from, to)` | 正态分布/均匀分布         |
+| `randperm(m)`            | 随机排列                       |
+
+Tensor的创建可以结合、类比numpy进行理解
+
+#### Tensor的创建编程实例
+
+- [Tensor创建实例(py文件)](tensor_create_demo.py)
+- [Tensor创建实例(ipynb文件)](tensor_create_demo.ipynb)
