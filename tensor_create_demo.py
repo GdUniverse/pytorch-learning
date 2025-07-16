@@ -34,9 +34,15 @@ print(g.type())
 h = torch.ones_like(b)  # 创建一个和b形状相同的张量，值全部为1
 print(h)
 print(h.type())
+h = torch.ones_like(a)  # 创建一个和a形状相同的张量，值全部为1
+print(h)
+print(h.type())
 
 # zeros_like(tensor)
 i = torch.zeros_like(b)  # 创建一个和b形状相同的张量，值全部为0
+print(i)
+print(i.type())
+i = torch.zeros_like(a)  # 创建一个和a形状相同的张量，值全部为0
 print(i)
 print(i.type())
 
