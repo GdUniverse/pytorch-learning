@@ -119,3 +119,41 @@ Tensor的创建可以结合、类比numpy进行理解
 
 - [Tensor创建实例(py文件)](tensor_create_demo.py)
 - [Tensor创建实例(ipynb文件)](tensor_create_demo.ipynb)
+
+### Tensor的属性
+
+- 每一个 Tensor 有 `torch.dtype`、`torch.device`、`torch.layout` 三种属性。
+- `torch.dtype` 标识了 `torch.Tensor` 对象的数据类型
+- `torch.device` 标识了 `torch.Tensor` 对象在创建之后所存储在的设备名称。
+  - 设备可以分为 CPU 和 GPU。
+  - CPU: `torch.device("cpu")`
+  - GPU:
+    - 单块GPU:`torch.device("cuda")`
+    - 多块GPU:`torch.device("cuda:0")`
+- `torch.layout` 表示 `torch.Tensor` 内存布局的对象。
+  - [Tensor的创建编程实例](#tensor的创建编程实例)展示的是 `torch.Tensor` 的内存布局为 `torch.strided`，称为稠密张量
+  - 除了 `torch.strided`(稠密张量) 外，还有稀疏张量
+  
+Tensor创建语句示列：`torch.tensor(data, dtype=torch.float32, device=torch.device("cpu"))`，默认为稠密张量
+
+### Tensor的属性——稀疏张量
+
+- `torch.sparse_coo_tensor`是最常用的稀疏张量类型，适用于存储大部分元素为零的张量。它使用坐标格式(COO)来存储非零元素的位置和数值。
+- 张量中0元素越多越稀疏，全为0则最稀疏。
+- 用线性代数理解即为低秩矩阵。
+- 使用稀疏张量的意义：
+  - 对于有参数模型，如果导入的参数有很多为0的参数，可以将0消去简化模型。
+  - 对于有大量0元素的矩阵，稀疏张量只存储非零元素，减少了内存占用。(如果使用稠密张量存储，内存占用会很大)
+    - 如一个100x100的矩阵，只有一个参数非零，其他参数都为0，稠密张量会占用10000个元素的内存，而稀疏张量只存储一个非零元素和其相应的坐标
+    - 稀疏张量创建:
+
+    ```python
+    import torch
+
+    # 创建稀疏张量
+    indices = torch.tensor([[0, 1, 2], [2, 0, 1]])  # 坐标值 表示3个非零元素的位置(0, 1), (2, 0), (2, 1)
+    values = torch.tensor([3, 4, 5])  # 非零元素的值 和坐标值一一对应
+    sparse_tensor = torch.sparse_coo_tensor(indices, values, (3, 3))
+
+    print(sparse_tensor)
+    ```
