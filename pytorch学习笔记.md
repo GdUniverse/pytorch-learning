@@ -50,7 +50,7 @@
 
 在测试模型确定模型性能不错的情况下，如果获得了一组样本只有属性没有标签，就可以通过这个模型进行推理获得模型的标签。所谓推理的过程就是"计算"`标签`的过程
 
-## Tensor(张量)的基本概念
+## Tensor(张量)的基本定义
 
 在实际生活中矩阵的$m\times n$是不够用的，需要更多的维度$m\times n\times o \times ···$，于是张量诞生了。它可以创建任意维度的数据
 
@@ -136,7 +136,9 @@ Tensor的创建可以结合、类比numpy进行理解
   
 Tensor创建语句示列：`torch.tensor(data, dtype=torch.float32, device=torch.device("cpu"))`，默认为稠密张量
 
-### Tensor的属性——稀疏张量
+在进行图像处理时，图像的读取和处理通常会使用CPU进行计算，而参数的计算、推理、反向传播和图像的显示通常会使用GPU进行计算。通过对资源的合理分配来实现对整个资源利用率的最大化。
+
+#### Tensor的属性——稀疏张量
 
 - `torch.sparse_coo_tensor`是最常用的稀疏张量类型，适用于存储大部分元素为零的张量。它使用坐标格式(COO)来存储非零元素的位置和数值。
 - 张量中0元素越多越稀疏，全为0则最稀疏。
@@ -157,3 +159,153 @@ Tensor创建语句示列：`torch.tensor(data, dtype=torch.float32, device=torch
 
     print(sparse_tensor)
     ```
+
+#### Tensor属性设置的创建实例
+
+- [Tensor属性设置、稀疏张量创建实例(py文件)](sparse_tensor_demo.py)
+- [Tensor属性设置、稀疏张量创建实例(ipynb文件)](sparse_tensor_demo.ipynb)
+
+### Tensor的算术运算
+
+#### 四则运算
+
+- 加法
+
+```python
+c = a + b
+c = torch.add(a, b)
+c = a.add(b)
+a.add_(b)
+```
+
+前三种方式是创建一个新的张量`c`，而最后一种方式是直接在`a`上进行加法操作，修改了`a`的值。
+
+注意：所有带了`_`的函数都是原地操作，会直接修改原张量的值。
+
+- 减法
+
+```python
+c = a - b
+c = torch.sub(a, b)
+c = a.sub(b)
+a.sub_(b)
+```
+
+- 乘法(对应元素相乘)(element-wise multiplication，又称哈达玛积)
+
+```python
+c = a * b
+c = torch.mul(a, b) 
+c = a.mul(b)
+a.mul_(b)
+```
+
+- 除法(对应元素相除)
+
+```python
+c = a / b
+c = torch.div(a, b)
+c = a.div(b)
+a.div_(b)
+```
+
+#### 矩阵运算(矩阵乘法)
+
+- 矩阵乘法
+
+  矩阵运算不存在`_`的原地操作，由于无法确定计算得到的张量形状和原本张量形状一致，所有的矩阵运算都是创建一个新的张量。
+
+```python
+a = torch.ones(2, 3)
+b = torch.ones(3, 4)
+c = torch.mm(a, b)
+c = torch.matmul(a, b)
+c = a @ b
+c = a.mm(b)
+c = a.matmul(b)
+```
+
+注意：如果`a`是一个mxn的矩阵，则`b`是一个nxp的矩阵，那么`c`将是一个mxp的矩阵。
+
+- 高维张量的矩阵乘法
+
+对于高维的Tensor(dim>2)，定义其矩阵乘法仅在最后的两个维度，要求前面的维度必须保持一致，就像矩阵的索引一样并且运算操作只有torch.matmul。
+
+```python
+a = torch.randn(1, 2, 3, 4)  # 2x3x4的张量
+b = torch.randn(1, 2, 4, 5)  # 2x4x5的张量
+c = torch.matmul(a, b)
+c = a.matmul(b)
+```
+
+#### 其他运算
+
+- 幂运算
+
+  ```python
+  c = torch.pow(a, b)
+  c = a.pow(b)
+  c = a ** b
+  a.pow_(b)
+  ```
+
+  - 特殊的幂运算——e的x次方
+
+    ```python
+    c = torch.exp(a)
+    c = a.exp()
+    a.exp_()
+    ```
+
+- 开方运算
+
+```python
+c = torch.sqrt(a)
+c = a.sqrt()
+a.sqrt_()
+```
+
+- 对数运算
+
+```python
+c = torch.log2(a)  # 以2为底的对数
+c = torch.log10(a)  # 以10为底的对数
+c = torch.log(a)  # 自然对数
+c = a.log2()
+c = a.log10()
+c = a.log()
+a.log2_()  # 原地操作
+a.log10_()  # 原地操作
+a.log_()  # 原地操作
+torch.log2_(a)
+torch.log10_(a)
+torch.log_(a)
+```
+
+#### Tensor的算术运算编程实例
+
+- [Tensor的算术运算(py文件)](arithmetic_operations_demo.py)
+- [Tensor的算术运算(ipynb文件)](arithmetic_operations_demo.ipynb)
+
+### pytorch中的in-place操作
+
+- "就地"操作，即不允许使用临时变量。
+- 也称为原位操作。
+- 比如：
+  - x=x+y
+  - add_、sub_、mul_ 等等
+
+### pytorch中的广播机制
+
+- **广播机制**：张量参数的形状不一致时，PyTorch会自动扩展较小的张量，使其与较大的张量形状一致，从而进行逐元素操作。
+- 广播机制的规则(需要满足两个条件)：
+  - 每个张量至少有一个维度
+    - 即每个张量的维度数目至少为1
+  - 右对齐
+    - 从右向左对齐，两个张量的维度数目不一致时，较小的张量会在左侧补1
+    - 补齐后要求每个维度的大小要么相等，要么其中一个维度的大小为1
+- 所谓补齐就是把原本的张量作为一个单元进行复制填充，直至和另一个张量对应维度的形状一致。
+
+#### 广播机制的编程实例
+- [广播机制(py文件)](broadcast_demo.py)
+- [广播机制(ipynb文件)](broadcast_demo.ipynb)
